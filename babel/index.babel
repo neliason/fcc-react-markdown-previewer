@@ -1,0 +1,82 @@
+var STARTING_TEXT = "# Heading\n## Subheading\n`mono`  \n*italics*  \n**bold**";
+
+function Markdown(props) {
+  return(
+    <div className="markdown text-center">
+      <textarea rows="15" cols="35" value={props.text} onChange={props.onchange} />
+    </div>
+  );
+}
+
+Markdown.propTypes = {
+  text: React.PropTypes.string.isRequired,
+  onchange: React.PropTypes.func.isRequired,
+}
+
+function Output() {
+  return(
+    <div id="output" />
+  );
+}
+
+function Title(props) {
+  return(
+    <div className="title text-center">
+      <h1>{props.title}</h1>
+    </div>
+  );
+}
+
+Title.propTypes = {
+  title: React.PropTypes.string
+}
+
+var Application = React.createClass({
+  
+  propTypes: {
+    initialText: React.PropTypes.string,
+    title: React.PropTypes.string,
+  },
+  
+  getDefaultProps: function() {
+    return {
+      title: "Markdown Previewer",
+    }
+  },
+  
+  getInitialState: function() {
+    return {
+      text: this.props.initialText
+    };
+  },
+  
+  componentDidMount() {
+    document.getElementById("output").innerHTML = marked(this.props.initialText);
+  },
+  
+  onInputChange: function(event) {
+    document.getElementById("output").innerHTML = marked(event.target.value);
+    this.setState({
+      text: event.target.value
+    });
+  },
+  
+  render: function() {
+    return (
+      <div>
+        <Title title={this.props.title} />
+        <div className="row">
+          <div className="col-xs-12 col-sm-6">
+            <Markdown text={this.state.text} onchange={this.onInputChange} />
+          </div>
+          <div className="col-xs-12 col-sm-6">
+            <Output />
+          </div>
+        </div>
+      </div>
+    );
+  }
+});
+
+
+ReactDOM.render(<Application initialText={STARTING_TEXT}/>, document.getElementById('container'));
